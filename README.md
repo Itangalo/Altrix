@@ -1,4 +1,10 @@
 # Äventyrsspelet Φ Flux
-På den här sajten finns en ärendekö för Äventyrsspelet Flux, där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker. Du hittar den under fliken 'Issues'. Kolla gärna vad andra har skrivit och kom med synpunkter på idéer som finns.
+På den här sajten finns en ärendekö för Äventyrsspelet Flux, där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
+Senaste versionen av spelet är beta-3, och beta-4 håller på att ta form.
 
-Videor som presenterar spelet går att hitta på https://www.youtube.com/playlist?list=PL5sq4vtv3sTFHI3y2Dx87BbZ0Ub68bdOQ
+* [Ärenden där åsikter från speltestare är särskilt välkomna](https://github.com/Itangalo/flux/issues?q=is%3Aissue+is%3Aopen+label%3A%22%C3%85sikter+%C3%B6nskas%22)
+* [Alla öppna ärenden](https://github.com/Itangalo/flux/issues)
+* [Videor som presenterar spelet](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFHI3y2Dx87BbZ0Ub68bdOQ)
+* [Senaste versionen av reglerna](https://docs.google.com/document/d/1Q_pZ0WX0aOq26T58mUwapzdq7fgq_ViS6TdR_Ql4Z_c/edit?usp=sharing)
+* [Senaste versionen av referensbladet](https://docs.google.com/document/d/16TkV_Xmfj7y2afkjahS3ihqRBaoMIRfc6H3l9Pvabm8/edit?usp=sharing)
+* [Lista med ändringar](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
