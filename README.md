@@ -9,4 +9,4 @@ Nedan finns några användbara länkar.
 * [Senaste versionen av referensbladet](https://docs.google.com/document/d/16TkV_Xmfj7y2afkjahS3ihqRBaoMIRfc6H3l9Pvabm8/edit?usp=sharing)
 * [Lista med ändringar](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
 
-Senaste versionen av spelet är beta-9.
+Senaste versionen av spelet är beta-10.
