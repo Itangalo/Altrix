@@ -6,8 +6,9 @@ Nedan finns några användbara länkar.
 * [Ärenden där åsikter från speltestare är särskilt välkomna](https://github.com/Itangalo/flux/issues?q=is%3Aissue+is%3Aopen+label%3A%22%C3%85sikter+%C3%B6nskas%22)
 * [Alla öppna ärenden](https://github.com/Itangalo/flux/issues)
 * [Videor som presenterar spelet](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFHI3y2Dx87BbZ0Ub68bdOQ)
+* [Senaste versionen av blad till introduktionspartiet](https://docs.google.com/document/d/1WZvlXinWgS65jE2mtvnEtWLYVmYso5i4UegIM5H_c2E/edit?usp=sharing)
 * [Senaste versionen av reglerna](https://docs.google.com/document/d/1Q_pZ0WX0aOq26T58mUwapzdq7fgq_ViS6TdR_Ql4Z_c/edit?usp=sharing)
 * [Senaste versionen av referensbladet](https://docs.google.com/document/d/16TkV_Xmfj7y2afkjahS3ihqRBaoMIRfc6H3l9Pvabm8/edit?usp=sharing)
-* [Lista med ändringar](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
+* [Changelog](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
 
-Senaste versionen av spelet är beta-10.
+Senaste versionen av spelet är snart beta-11.
