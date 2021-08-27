@@ -2,6 +2,7 @@
 På den här sajten finns en ärendekö för Äventyrsspelet Flux, där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
 Nedan finns några användbara länkar.
 
+* [Kort beskrivning av spelet, version beta-10](https://drive.google.com/file/d/1fj5JhWl3zJcjind4OdJlWyDK7qUIHl3F/view?usp=sharing) (pitch skickad till Fastaval 2022)
 * [Ärenden där åsikter från speltestare är särskilt välkomna](https://github.com/Itangalo/flux/issues?q=is%3Aissue+is%3Aopen+label%3A%22%C3%85sikter+%C3%B6nskas%22)
 * [Alla öppna ärenden](https://github.com/Itangalo/flux/issues)
 * [Videor som presenterar spelet](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFHI3y2Dx87BbZ0Ub68bdOQ)
