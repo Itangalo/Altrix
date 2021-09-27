@@ -10,6 +10,6 @@ Nedan finns några användbara länkar.
 * [Senaste versionen av reglerna](https://docs.google.com/document/d/1Q_pZ0WX0aOq26T58mUwapzdq7fgq_ViS6TdR_Ql4Z_c/edit?usp=sharing)
 * [Senaste versionen av referensbladet](https://docs.google.com/document/d/16TkV_Xmfj7y2afkjahS3ihqRBaoMIRfc6H3l9Pvabm8/edit?usp=sharing)
 * [Changelog](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
-* [https://docs.google.com/document/d/1KzuksDq1zs2QzhiZZsYU-YpTrxwXCZp7xfEvHP8KZoM/edit?usp=sharing](Lista med spelkomponenter)
+* [https://docs.google.com/document/d/1KzuksDq1zs2QzhiZZsYU-YpTrxwXCZp7xfEvHP8KZoM/edit](Lista med spelkomponenter)
 
 Senaste versionen av spelet är snart beta-11.
