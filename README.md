@@ -1,5 +1,5 @@
-# Äventyrsspelet Φ Flux
-På den här sajten finns en ärendekö för Äventyrsspelet Flux, där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
+# Fluxkristall
+På den här sajten finns en ärendekö för Fluxkristall (tidigare _Äventyrsspelet Φ Flux_), där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
 Nedan finns några användbara länkar.
 
 * [Kort beskrivning av spelet, version beta-10](https://drive.google.com/file/d/1fj5JhWl3zJcjind4OdJlWyDK7qUIHl3F/view?usp=sharing) (pitch skickad till Fastaval 2022)
