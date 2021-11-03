@@ -51,11 +51,11 @@ function crFight(card, chars, stats) {
       var result = skillCheck(dice, card.fight, Math.max(c.Enhands, c['Tvåhands']) + weapon + ranged);
       if (result > 0) {
         success = true;
-        Logger.log('Vinst!')
+        Logger.log('Vinst: ' + card.title);
       }
       else {
         c.HP = Math.max(0, c.HP - 1);
-        Logger.log('Förlust')
+        Logger.log('Förlust: ' + card.title);
       }
       if (result == 2) {
         c.Flux += 3;
@@ -75,6 +75,7 @@ function crGhost(card, chars, stats) {
       var result = skillCheck(dice, card.success, chars[i].MAG);
       if (result > 0) {
         success = true;
+        Logger.log('Vinst: ' + card.title);
       }
       else {
         var loss = 2;
@@ -82,6 +83,7 @@ function crGhost(card, chars, stats) {
           loss = 1;
         }
         chars[i].MP = Math.max(0, chars[i].MP - loss);
+        Logger.log('Förlust: ' + card.title);
       }
       if (result == 2) {
         chars[i].Flux += 3;
