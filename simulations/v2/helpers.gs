@@ -23,6 +23,16 @@ function checkStraight(dice) {
   return false;
 }
 
+// Returns the number of times a certain value occurs in an array.
+function countOccurances(dice, value) {
+  var occurances = 0;
+  for (d of dice) {
+    if (d == value)
+      occurances++;
+  }
+  return occurances;
+}
+
 // Returns the number of equal dice of at least value 'minimum'.
 // Only looks at the first thre dice if 'onlyOwn' is set to true.
 function countEquals(dice, onlyOwn = false, minimum = 0) {
@@ -49,6 +59,16 @@ function skillCheck(dice, targetValue, modifier) {
     return 1;
   }
   return 0;
+}
+
+// Used for sorting lists of objects by a property, such as how vulnerable characters are.
+function sortBy(list, property, ascending = true) {
+  if (ascending) {
+    list.sort((a, b) => a[property] > b[property] ? 1 : -1);
+  }
+  else {
+    list.sort((a, b) => b[property] > a[property] ? 1 : -1);
+  }
 }
 
 // Builds and returns an object with properties/values specified in an array of data.
