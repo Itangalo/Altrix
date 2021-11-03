@@ -1,15 +1,15 @@
 // Simulation-specific data
 var characterDataRange = 'J1:P22';
-var usedCharacters = ['Riddare', 'Krigare'];
+var usedCharacters = ['Krigare'];
 
 // Simulation-independent data
-safeDieCost = 5; // The number of fluxcrystals paid to select outcome of die instead of re-roll.
-fallbackIterations = 1;
-pathsDataRange = 'A1:AP20';
-specialPlaces = ['Hembyn', 'Universitetet', 'Soldatskolan', 'Akademin', 'Dvärgavalvet', 'Lorien', 'Tornet1', 'Tornet2', 'Tornet3'];
-spacesRange = 'A2:B62';
-cardDataRange = 'A2:P169';
-cardColumns = {
+var safeDieCost = 5; // The number of fluxcrystals paid to select outcome of die instead of re-roll.
+var fallbackIterations = 1;
+var pathsDataRange = 'A1:AP20';
+var specialPlaces = ['Hembyn', 'Universitetet', 'Soldatskolan', 'Akademin', 'Dvärgavalvet', 'Lorien', 'Tornet1', 'Tornet2', 'Tornet3'];
+var spacesRange = 'A2:B62';
+var cardDataRange = 'A2:P169';
+var cardColumns = {
   deck: 1,
   type: 2,
   title: 3,
@@ -22,8 +22,8 @@ cardColumns = {
   trait: 11,
   CS: 16,
 };
-itemDataRange = 'A2:G60';
-itemColumns = {
+var itemDataRange = 'A2:G60';
+var itemColumns = {
   title: 1,
   type: 2,
   price: 3,
@@ -32,7 +32,21 @@ itemColumns = {
   HP: 6,
   MP: 7,
 };
-quests = ['Hembyn-Universitetet', 'Hembyn-Akadmin', 'Hembyn-Soldatskolan', 'Universitetet-Hembyn', 'Universitetet-Akadmin', 'Universitetet-Soldatskolan', 'Akademin-Hembyn', 'Akademin-Universitetet', 'Akademin-Soldatskolan', 'Soldatskolan-Hembyn', 'Soldatskolan-Universitetet', 'Soldatskolan-Akademin'];
+var paths = {};
+var quests = ['Hembyn-Universitetet', 'Hembyn-Akademin', 'Hembyn-Soldatskolan', 'Universitetet-Hembyn', 'Universitetet-Akademin', 'Universitetet-Soldatskolan', 'Akademin-Hembyn', 'Akademin-Universitetet', 'Akademin-Soldatskolan', 'Soldatskolan-Hembyn', 'Soldatskolan-Universitetet', 'Soldatskolan-Akademin'];
+var specialPlaceHealing = {
+  'Hembyn': [1, 1],
+  'Universitetet': [0, 2],
+  'Soldatskolan': [2, 0],
+  'Akademin': [1, 1],
+  'Dvärgavalvet': [2, 1],
+  'Lorien': [1, 2]
+}
+var specialPlaceTraining = {
+  'Universitetet': ['Besvärjelser'],
+  'Soldatskolan': ['Tvåhands', 'Avstånds'],
+  'Akademin': ['Enhands'],
+};
 
 function simulate(iterations) {
   if (!iterations)
@@ -52,14 +66,14 @@ function simulate(iterations) {
   }
 
   // Build the paths to each character's destinations.
-  allPaths = transpose(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paths').getRange(pathsDataRange).getValues());
-  paths = {};
-  for (i in allPaths) {
-    label = allPaths[i].shift();
+  var allPaths = transpose(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paths').getRange(pathsDataRange).getValues());
+  //paths = {};
+  for (var i in allPaths) {
+    var label = allPaths[i].shift();
     paths[label] = allPaths[i].filter(n => n)
   }
 
-  for (i in characters) {
+  for (var i in characters) {
     var c = characters[i];
     var destinations = c['Platser'].split(', ');
     c.path = [destinations[0]];
@@ -106,6 +120,8 @@ function simulate(iterations) {
     for (var j in chars) {
       setVulnerableValues(chars[j]);
       setSkillPrio(chars[j]);
+      chars[j].space = chars[j].path.shift();
+      setDestination(chars[j]);
     }
     var stats = {
       days: 0,
@@ -124,24 +140,26 @@ function simulate(iterations) {
        * Part 3a: Roll and move.
        */
       var groups = {};
-      for (j in chars) {
+      for (var j in chars) {
         var char = chars[j];
         var dice = roll();
         checkFlowRoll(dice, char, stats);
-        // @TODO: Potentially pay fluxcrystals to turn pairs into three-of-a-kind to level up.
+        payToLevelUpMovement(dice, char); // Potentially pay fluxcrystals to turn pairs into three-of-a-kind to level up.
         if (countEquals(dice, true) >= 3)
-          levelUp(dice, char, stats)
+          levelUp(dice, char, stats);
 
         // Synchronize groups that move together.
         // Movement is synched if characters share group name and id of next space on their path.
         char.space = char.path.shift();
         var groupId = char.Grupp + char.space;
         if (!groups[groupId]) {
-          groups[groupId] = {members: []};
+          groups[groupId] = {members: [j]};
           groups[groupId].additionalMoves = countEquals(dice) - 1;
         }
-        groups[groupId].members.push(j);
-        groups[groupId].additionalMoves = Math.min(groups[groupId].additionalMoves, countEquals(dice) - 1);
+        else {
+          groups[groupId].additionalMoves = Math.min(groups[groupId].additionalMoves, countEquals(dice) - 1);
+          groups[groupId].members.push(j);
+        }
       }
       // Move one group at a time.
       for (var j in groups) {
@@ -160,7 +178,7 @@ function simulate(iterations) {
        * Part 3b: Draw and resolve cards.
        */
       // We group characters by their spaces, since cards are shared by characters on a space.
-      groups = {};
+      var groups = {};
       for (var j in chars) {
         if (!groups[chars[j].space]) {
           groups[chars[j].space] = {members: []};
@@ -193,28 +211,63 @@ function simulate(iterations) {
         }
       }
 
-
-
-
       /**
        * Part 3c: Take actions at special places.
        */
-      for (j in chars) {
+      for (var j in chars) {
         var char = chars[j];
         if (specialPlaces.includes(char.space)) {
-          char.Flux += 3;
-          stats.allFlux += 3;
-          //Logger.log(char['Karaktär'] + ': ' + char.space);
+          var space = char.space;
+          Logger.log('Day ' + stats.days + ': ' + char['Karaktär'] + ' is at ' + space);
+
+          // Cache in quest reward and return it.
+          if (char.quest) {
+            var reward = 3;
+            if (['Soldatskolan-Akademin', 'Akademin-Soldatskolan'].includes(char.quest))
+              reward = 4;
+            char.Flux += reward;
+            stats.allFlux += reward;
+            quests.push(char.quest);
+            char.quest = false;
+          }
+
+          // Pay for healing, if relevant.
+          if (specialPlaceHealing[space]) {
+            payToHeal(char, specialPlaceHealing[space][0], specialPlaceHealing[space][1]);
+          }
+
+          // Attempt to level up, including re-rolls if relevant.
+          if (specialPlaceTraining[space]) {
+            var skill = specialPlaceTraining[space][0];
+            // Take care of special case where you can train two different skills.
+            if (specialPlaceTraining[space][1] && char.skillPrio[specialPlaceTraining[space][1]] > char.skillPrio[specialPlaceTraining[space][0]])
+              skill = specialPlaceTraining[space][1];
+            var cost = {
+              0: 3,
+              1: 3,
+              2: 4,
+              3: 4,
+              4: 5,
+              5: 8
+            }
+            if (char.Flux >= cost[char[skill]]) {
+              dice = roll(3 * cost[char[skill]]);
+              char.Flux -= cost[char[skill]];
+              stats.fluxLoss -= cost[char[skill]];
+              Logger.log(char['Karaktär'] + ' considers training ' + skill + ' (' + 3*cost[char[skill]] + ' dice)');
+              payToLevelUpTraining(dice, char, skill, stats);
+              if (countEquals(dice, false, char[skill]) >= 3) {
+                char[skill]++;
+                stats.allLevelUp++;
+                Logger.log(skill + ' level up: ' + char[skill]);
+              }
+            }
+          }
+
+          // Set next destination based on skills and available quests.
+          setDestination(char);
         }
       }
-      // @TODO:
-      // Cache in quest reward and return it.
-      // Check how much as most to spend on attempting to level up.
-      // Attempt to level up, including re-rolls if relevant.
-      // Pay for healing, if relevant.
-      // Determine new destination, based on prioritized skills and available quests.
-      // (Destination could be on the dark side.)
-      // Build path to new destination.
 
       /**
        * Part 3d: Pay to heal, if deemed necessary.
@@ -279,15 +332,92 @@ function simulate(iterations) {
  * Functions helping with in-game decisions.
  */
 
-// Returns true if one or more characters has reached the end space, otherwise false.
+// Returns true if one or more characters has reached the Evil Sorceress, otherwise false.
 function atTheEnd(chars) {
   for (i in chars) {
-    if (chars[i].path.length < 2) {
+    if (['Tornet1', 'Tornet2', 'Tornet3'].includes(chars[i].space))
       return true;
-    }
   }
   return false;
 }
+
+// Selects destination for character based on prio skills and available quests.
+// Also takes a new quest, if appropriate and possible.
+// If path to a new destination is already set, no new is added (but quests are considered).
+function setDestination(char) {
+  var here = char.space;
+  var there = false;
+  // Check if there is already a destination in the path.
+  for (var i = 1; i < char.path.length; i++) {
+    if (specialPlaces.includes(char.path[i])) {
+      there = char.path[i];
+      takeQuest(char, here, there);
+      return;
+    }
+  }
+
+  // Check if player is ready for end fight.
+  if (['Lorien', 'Dvärgavalvet', 'Tornet1', 'Tornet2', 'Tornet3'].includes(here)) {
+    there = 'Tornet3';
+    buildPath(char, here, there);
+    return;
+  }
+  if (char.skillPrio.max.value < 4) {
+    there = 'Dvärgavalvet';
+    if (here == 'Akademin')
+      there = 'Lorien';
+    buildPath(char, here, there);
+    return;
+  }
+
+  // Look for destinations matching the highly prioritized skills, where quests are available.
+  // Shuffle to avoid systematic bias.
+  var skills = shuffle(['Enhands', 'Tvåhands', 'Avstånds', 'Besvärjelser']);
+  for (var p of [4, 3, 2, 1, 0]) {
+    for (var s of skills) {
+      for (var d in specialPlaceTraining) {
+        if (d != here && char.skillPrio[s] == p && specialPlaceTraining[d].includes(s) && quests.includes(here + '-' + d)) {
+          there = d;
+          buildPath(char, here, there);
+          takeQuest(char, here, there);
+          return;
+        }
+      }
+    }
+  }
+
+  // If no destination is found, there is no matching quest. Go for the highest prioritized skill.
+  // @TODO: Add Hembyn to possible destinations, though no training can be done there.
+  for (var p of [4, 3, 2, 1, 0]) {
+    for (var s of skills) {
+      for (var d in specialPlaceTraining) {
+        if (d != here && char.skillPrio[s] == p && specialPlaceTraining[d].includes(s)) {
+          there = d;
+          buildPath(char, here, there);
+          return;
+        }
+      }
+    }
+  }
+}
+
+// Adds a path from here to there for a character.
+function buildPath(char, here, there) {
+  if (!paths[here + '-' + there])
+    return;
+  char.path.push(...paths[here + '-' + there]);
+  char.path.push(there);
+}
+
+// Gives a character a quest from here to there, if available.
+function takeQuest(char, here, there) {
+  var label = here + '-' + there;
+  if (quests.includes(label)) {
+    char.quest = label;
+    quests.splice(quests.indexOf(label), 1);
+  }
+}
+
 
 // Sets a level up prio for a character.
 // 4 means that level up is very good and should happen before end game.
@@ -312,8 +442,8 @@ function setSkillPrio(char) {
     if (char[i] > 5)
       skillPrio[i] = 0;
   }
-  // If no fighting skill has reached level 4, leveling up is important.
-  if (char.Enhands > 4 && char['Tvåhands'] < 4) {
+  // If no fighting skill has reached level 4, leveling up is very important.
+  if (char.Enhands < 4 && char['Tvåhands'] < 4) {
     skillPrio.Enhands = 4;
     skillPrio['Tvåhands'] = 4;
   }
@@ -326,6 +456,7 @@ function setSkillPrio(char) {
   for (var i in skillPrio) {
     max = Math.max(max, skillPrio[i]);
   }
+  // @TODO: Refactor to remove the array with skills. It is not used, so max should be stored flat.
   skillPrio.max = {
     value: max,
     skills: []
@@ -341,8 +472,7 @@ function setSkillPrio(char) {
 // Returns true if level up, otherwise false.
 function levelUp(dice, char, stats) {
   // Randomize order to check skills to avoid prioritizing based on alphabetical order or so.
-  var skills = ['Smyga', 'Enhands', 'Tvåhands', 'Avstånds', 'Besvärjelser'];
-  shuffle(skills);
+  var skills = shuffle(['Smyga', 'Enhands', 'Tvåhands', 'Avstånds', 'Besvärjelser']);
   for (var v = char.skillPrio.max.value; v >= 0; v--) {
     for (var s of skills) {
       if (char.skillPrio[s] >= v && char[s] < dice[0]) {
@@ -434,6 +564,95 @@ function payToHeal(char, HP = -1, MP = -1) {
   payToHeal(char, HP, MP);
 }
 
+// Decides whether a character should pay to turn a pair into three-of-a-kind
+// in the movement roll in order to level up and, if so, does it.
+// Actual leveling up is done outside this function.
+function payToLevelUpMovement(dice, char) {
+  // Check two necessary basic conditions.
+  if (char.Flux < safeDieCost || countEquals(dice, true) != 2)
+    return;
+
+  // Shuffle to avoid bias.
+  var skills = shuffle(['Smyga', 'Enhands', 'Tvåhands', 'Avstånds', 'Besvärjelser']);
+  
+  // Set thresholds for how many fluxcrystals the character should have left in order
+  // to pay for leveling up, depending on prio of skill.
+  var threshold = {
+    4: safeDieCost,
+    3: safeDieCost,
+    2: safeDieCost + 2,
+    1: safeDieCost + 4,
+  };
+  // Check skills in decending order of priority.
+  for (var p of [4, 3, 2, 1]) {
+    for (var s of skills) {
+      // Note that dice[1] will always show the value of the pair.
+      // First condition is to make sure that only skills of given priority is checked against.
+      if (char.skillPrio[s] == p && dice[1] > char[s] && char.Flux >= threshold[char.skillPrio[s]]) {
+        dice[0] = dice[1];
+        dice[2] = dice[1];
+        char.Flux -= safeDieCost;
+        Logger.log(char['Karaktär'] + ' paid to level up ' + s + '. Flux is at ' + char.Flux);
+        return;
+      }
+    }
+  }
+}
+
+// Decides whether a character should pay to reroll a die to perhaps get three-of-a-kind
+// in a training roll in order to level up and, if so, does it.
+// If a die is re-rolled, the function is called again.
+// Actual leveling up is done outside this function.
+function payToLevelUpTraining(dice, char, skill, stats) {
+  // First check if there are fluxcrystals and if there is at most a pair above the skill value.
+  if (char.Flux < 1 || countEquals(dice, false, char[skill]) != 2)
+    return;
+  
+  // Only reroll if there are enough fluxcrystals, based on prio of skill.
+  var threshold = {
+    4: 1,
+    3: 1,
+    2: 3,
+  };
+  if (char.Flux >= threshold[char.skillPrio[skill]]) {
+    // Select a die to reroll. First try finding dice lower than the skill value.
+    for (var i in dice) {
+      if (dice[i] < char[skill]) {
+        char.Flux--;
+        dice[i] = Math.floor(Math.random()*6+1);
+        // If own dice is re-rolled, check for flow.
+        if (i < 3)
+          checkFlowRoll(dice, char, stats);
+        if (countEquals(dice, false, char[skill]) >= 3) {
+          return;
+        }
+        else {
+          payToLevelUpTraining(dice, char, skill, stats);
+          return;
+        }
+      }
+    }
+    // If no lower-than-skill die is found, look for singlet dice.
+    // Never re-rolling dice from pairs is sub-optimal, but good enough.
+    for (var i in dice) {
+      if (dice[i] >= char[skill] && countOccurances(dice, dice[i]) == 1) {
+        char.Flux--;
+        dice[i] = Math.floor(Math.random()*6+1);
+        // If own dice is re-rolled, check for flow.
+        if (i < 3)
+          checkFlowRoll(dice, char, stats);
+        if (countEquals(dice, false, char[skill]) >= 3) {
+          return;
+        }
+        else {
+          payToLevelUpTraining(dice, char, skill, stats);
+          return;
+        }
+      }
+    }
+  }
+}
+
 // Shorthand function for checking and resolving flow rolls.
 function checkFlowRoll(dice, char, stats) {
   if (checkStraight(dice)) {
@@ -449,32 +668,22 @@ function getPrimarySkill(char) {
   return 'Tvåhands';
 }
 
-// Used for sorting lists of objects by a property, such as how vulnerable characters are.
-function sortBy(list, property, ascending = true) {
-  if (ascending) {
-    list.sort((a, b) => a[property] > b[property] ? 1 : -1);
-  }
-  else {
-    list.sort((a, b) => b[property] > a[property] ? 1 : -1);
-  }
-}
-
 function myFunction() {
-  char1 = {
+  var char = {
     Flux: 13,
     HP: 1,
     MP: 1,
     'HP max': 4,
     'MP max': 4,
+    'Smyga': 2,
+    'Enhands': 2,
+    'Tvåhands': 1,
+    'Avstånds': 2,
+    'Besvärjelser': 1,
   }
-  char2 = {
-    Flux: 12,
-    HP: 3,
-    MP: 1,
-    'HP max': 4,
-    'MP max': 4,
-  }
-  list = [char1, char2];
-  sortBy(list, 'HP', false);
-  Logger.log(list);
+  setSkillPrio(char);
+  var dice = [1, 3, 3, 2, 4, 4];
+  var stats = {allFlux: 0};
+  payToLevelUpTraining(dice, char, 'Enhands', stats);
+  debugger
 }
