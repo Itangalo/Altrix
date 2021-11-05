@@ -39,7 +39,6 @@ function crFight(card, chars, stats) {
       var result = skillCheck(dice, 13, c['Avstånds']);
       if (result)
         ranged++;
-        Logger.log('Pil!');
     }
   }
   for (var c of chars) {
@@ -55,6 +54,7 @@ function crFight(card, chars, stats) {
       }
       else {
         c.HP = Math.max(0, c.HP - 1);
+        setVulnerableValues(c);
         Logger.log('Förlust: ' + card.title);
       }
       if (result == 2) {
@@ -83,6 +83,7 @@ function crGhost(card, chars, stats) {
           loss = 1;
         }
         chars[i].MP = Math.max(0, chars[i].MP - loss);
+        setVulnerableValues(chars[i]);
         Logger.log('Förlust: ' + card.title);
       }
       if (result == 2) {
