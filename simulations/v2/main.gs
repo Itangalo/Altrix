@@ -1,6 +1,5 @@
 // Simulation-specific data
 var characterDataRange = 'J1:P22';
-var usedCharacters = ['Krigare'];
 
 // Simulation-independent data
 var safeDieCost = 5; // The number of fluxcrystals paid to select outcome of die instead of re-roll.
@@ -56,14 +55,17 @@ function simulate(iterations) {
    */
 
   // Get character initial data from the spreadsheet and populate the characters object.
-  characterData = transpose(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('characters').getRange(characterDataRange).getValues());
-  characters = {};
+  var characterData = transpose(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('characters').getRange(characterDataRange).getValues());
+  var characters = {};
+  var numberOfCharacters = 0;
   for (i in characterData) {
     data = buildObject(characterData[i], ":");
-    if (usedCharacters.includes(data['Karaktär'])) {
+    if (data['Grupp']) {
       characters[data['Karaktär']] = data;
+      numberOfCharacters++;
     }
   }
+  debugger
 
   // Build the paths to each character's destinations.
   var allPaths = transpose(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('paths').getRange(pathsDataRange).getValues());
@@ -128,6 +130,7 @@ function simulate(iterations) {
       allFlux: 0,
       fluxLoss: 0,
       allLevelUp: 0,
+      healings: 0,
       CS: 0,
     }
 
@@ -143,6 +146,8 @@ function simulate(iterations) {
       for (var j in chars) {
         var char = chars[j];
         var dice = roll();
+        if (char.vulnerableHP || char.vulnerableMP)
+          Logger.log(char['Karaktär'] + ' low: ' + char.HP + '/' + char.MP);
         checkFlowRoll(dice, char, stats);
         payToLevelUpMovement(dice, char); // Potentially pay fluxcrystals to turn pairs into three-of-a-kind to level up.
         if (countEquals(dice, true) >= 3)
@@ -233,7 +238,7 @@ function simulate(iterations) {
 
           // Pay for healing, if relevant.
           if (specialPlaceHealing[space]) {
-            payToHeal(char, specialPlaceHealing[space][0], specialPlaceHealing[space][1]);
+            payToHeal(char, stats, specialPlaceHealing[space][0], specialPlaceHealing[space][1]);
           }
 
           // Attempt to level up, including re-rolls if relevant.
@@ -253,7 +258,7 @@ function simulate(iterations) {
             if (char.Flux >= cost[char[skill]]) {
               dice = roll(3 * cost[char[skill]]);
               char.Flux -= cost[char[skill]];
-              stats.fluxLoss -= cost[char[skill]];
+              stats.fluxLoss += cost[char[skill]];
               Logger.log(char['Karaktär'] + ' considers training ' + skill + ' (' + 3*cost[char[skill]] + ' dice)');
               payToLevelUpTraining(dice, char, skill, stats);
               if (countEquals(dice, false, char[skill]) >= 3) {
@@ -273,7 +278,7 @@ function simulate(iterations) {
        * Part 3d: Pay to heal, if deemed necessary.
        */
       for (j in chars) {
-        payToHeal(chars[j]);
+        payToHeal(chars[j], stats);
       }
     }
 
@@ -284,9 +289,9 @@ function simulate(iterations) {
     //  stats.allFlux += chars[j].Flux;
     //  stats.allLevelUp += chars[j]['Level up'];
     //}
-    stats.levelUpPerCharacter = stats.allLevelUp / usedCharacters.length;
+    stats.levelUpPerCharacter = stats.allLevelUp / numberOfCharacters;
     stats.netFlux = stats.allFlux - stats.fluxLoss;
-    stats.fluxPerCharacterDay = stats.netFlux / usedCharacters.length / stats.days;
+    stats.fluxPerCharacterDay = stats.netFlux / numberOfCharacters / stats.days;
     results.push(stats);
   }
 
@@ -523,7 +528,7 @@ function setVulnerableValues(char) {
 // Decides whether the character should pay to heal and, if so, does it.
 // If more than 1 HP or MP can be restored per paid unit, set the parameters.
 // Function is called recursively, until character can't or shouldn't be healed more.
-function payToHeal(char, HP = -1, MP = -1) {
+function payToHeal(char, stats, HP = -1, MP = -1) {
   // Check if the character can heal relevant stats or indeed needs healing at all.
   if (char.Flux == 0 || char.vulnerableValue == 0) // No can or no need.
     return;
@@ -534,6 +539,10 @@ function payToHeal(char, HP = -1, MP = -1) {
   
   // Heal most needed stat first, then check other stat.
   char.Flux--;
+  stats.fluxLoss++;
+  stats.healings++;
+  Logger.log(char['Karaktär'] + ' pays to heal (is at ' + char.HP + '/' + char.MP + ')');
+
   if (char.vulnerableStat == 'HP') {
     if (HP) {
       char.HP += Math.abs(HP);
@@ -561,7 +570,7 @@ function payToHeal(char, HP = -1, MP = -1) {
   char.HP = Math.min(char.HP, char['HP max']);
   char.MP = Math.min(char.MP, char['MP max']);
   setVulnerableValues(char);
-  payToHeal(char, HP, MP);
+  payToHeal(char, stats, HP, MP);
 }
 
 // Decides whether a character should pay to turn a pair into three-of-a-kind
