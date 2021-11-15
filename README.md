@@ -2,7 +2,7 @@
 På den här sajten finns en ärendekö för Altrix (tidigare _Äventyrsspelet Φ Flux_), där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
 Nedan finns några användbara länkar.
 
-* [Kort beskrivning av spelet, version beta-12](https://drive.google.com/file/d/1MEsxXo9BgukI3abevPtQVu0GyXp_h0l_/view?usp=sharing) (engelska)
+* [Kort beskrivning av spelet, version beta-12](https://drive.google.com/file/d/1f46n9KTv1WTJ51RKwYYj5bJuSaP7Jyvn/view?usp=sharing) (engelska)
 * [Ärenden där åsikter från speltestare är särskilt välkomna](https://github.com/Itangalo/flux/issues?q=is%3Aissue+is%3Aopen+label%3A%22%C3%85sikter+%C3%B6nskas%22)
 * [Alla öppna ärenden](https://github.com/Itangalo/flux/issues)
 * [Videor som presenterar spelet, version beta-10](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFHI3y2Dx87BbZ0Ub68bdOQ) (Detta är _inte_ säljvideor, utan mer en demonstration av spelet.)
