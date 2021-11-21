@@ -2,6 +2,7 @@
 var global = {};
 var initialGameState = {};
 var strategies = {};
+var groupStrategies = {};
 var cardResolvers = {};
 var locationResolvers = {};
 
@@ -60,13 +61,12 @@ function simulate(iterations) {
           message = char.levelUp(dice);
           log('Movement: ' + message, 'levelUp');
         }
-          
 
         // Synchronize groups that move together.
-        // Movement is synched if characters share group name and id of next space on their path.
+        // Movement is synched if characters share group name and either id of the current space.
         // @TODO: Consider forming or disbanding groups.
-        let nextSpace = char.getNextSpace();
-        let groupId = char.group + nextSpace;
+        //let nextSpace = char.getNextSpace();
+        let groupId = char.group + char.space;
         if (!groups[groupId]) {
           groups[groupId] = {members: [j]};
           groups[groupId].moves = dice.countEquals();
@@ -99,8 +99,6 @@ function simulate(iterations) {
       }
       // Draw a card for each non-special place with characters.
       for (let i in groups) {
-        if (gs.decks[global.spaces[i]] == undefined)
-          debugger
         let card = gs.decks[global.spaces[i]].drawAndReturn();
 
         // Checks that the card has a valid resolver and then calls it.
@@ -114,7 +112,7 @@ function simulate(iterations) {
         // Command spell is an extra event, not the main card resolver.
         if (card.CS) {
           stats.CS++;
-          let message = cardResolvers.commandSpell(groups[i]);
+          let message = cardResolvers.commandSpell(card, groups[i], gs);
           log('Command spell: ' + message, 'commandSpell');
         }
       }
@@ -122,31 +120,49 @@ function simulate(iterations) {
       /**
        * Part 3c: Take actions at special places.
        */
-      for (let i in gs.characters) {
-        let c = gs.characters[i];
-        if (global.locations.list.includes(c.space) && global.locations.towers[global.mode] != c.space) {
-          let location = c.space;
-          log('Day ' + stats.days + ': ' + c.name + ' is at ' + location, 'atLocation');
+      // Some actions (going to the shop) is relevant to do as a group.
+      // So we loop through locations and form groups, rather than only looping through characters.
+      for (let location of global.locations.list) {
+        // Form the groups.
+        let group = [];
+        let present = [];
+        for (let c in gs.characters) {
+          if (gs.characters[c].space == location) {
+            group.push(gs.characters[c]);
+            present.push(c);
+          }
+        }
+        if (group.length == 0) {
+          continue;
+        }
+        if (group.length)
+          log('Day ' + stats.days + ', at ' + location + ': ' + present.join(', '), 'atLocation');
 
-          // Cache in quest reward and return it.
+
+        // Cache in quest rewards and return them.
+        for (let c of group) {
           if (c.quest && c.quest.split('-').pop() == location) {
             stats.completedQuests++;
             c.changeFlux(gs.quests.rewards[c.quest]);
             gs.quests.available.push(c.quest);
             c.quest = false;
+            log('Reward for finished quest: ' + c.name, 'quest');
           }
+        }
 
-          // Pay for healing, if relevant.
-          if (global.locations[location].healing) {
-            let message = c.payToHeal(global.locations[location].healing);
-            if (message)
-              log(i + ' payed for healing at ' + location + '.', 'payForHealing');
-
+        // Go shopping, if relevant.
+        if (location == 'Home') {
+          let buy = groupStrategies[global.groupStrategy].preparePurchase(group, gs);
+          // Buying goes on until the group strategy says no.
+          while (buy) {
+            locationResolvers.home.buyItem(buy.item, buy.character, gs);
+            buy = groupStrategies[global.groupStrategy].preparePurchase(group, gs);
           }
+        }
 
-          // Give opportunity for training, if relevant.
-          if (global.locations[location].training) {
-
+        // Give opportunity for training, if relevant.
+        if (global.locations[location].training) {
+          for (let c of group) {
             let skill = global.locations[location].training[0];
             // Take care of special case where you can train two different skills.
             // Note: Strategy to never train skill at 4 or higher is hard-coded here.
@@ -155,20 +171,41 @@ function simulate(iterations) {
             let message = c.payForTraining(skill);
             log(c.name + ' considers training: ' + message, 'considerTraining');
           }
-          // Set next destination based on skills and available quests.
+        }
+
+        // Pay for healing, if relevant.
+        if (global.locations[location].healing) {
+          for (let c of group) {
+            let message = c.payToHeal(global.locations[location].healing);
+            if (message)
+              log(i + ' payed for healing at ' + location + '.', 'payForHealing');
+          }
+        }
+
+        // Set next destination based on skills and available quests.
+        // Shuffle order to give equal chances to find good quests.
+        shuffle(group);
+        for (let c of group) {
           let message = c.setDestination(gs);
           log(c.name + ' decides to go to ' + message, 'selectDestination');
         }
       }
 
       /**
-       * Part 3d: Pay to heal, if deemed necessary.
+       * Part 3d: Pay to heal at sunset, if deemed necessary.
        */
       // @TODO: Consider giving flux crystals and items between characters.
-      for (let i in gs.characteres) {
+      for (let i in gs.characters) {
         let message = gs.characters[i].payToHeal();
         if (message)
           log(i + ' payed for healing at sunset.', 'payForHealing');
+      }
+
+      /**
+       * Part 3e: Shuffle any decks queued for shuffling.
+       */
+      for (let d in gs.decks) {
+        gs.decks[d].considerShuffling();
       }
     }
 
@@ -180,16 +217,25 @@ function simulate(iterations) {
     stats.minFight = 100;
     stats.maxFight = 0;
     stats.stepsLeft = 0;
+    stats.passOuts = 0;
+    stats.heals = 0;
+    stats.flux = 0;
+    let numberOfCharacters = 0;
     for (let i in gs.characters) {
+      numberOfCharacters++;
       stats.minCS = Math.min(gs.characters[i].CS, stats.minCS);
       stats.maxCS = Math.max(gs.characters[i].CS, stats.maxCS);
       stats.minFight = Math.min(gs.characters[i].fightValues.max, stats.minFight);
       stats.maxFight = Math.max(gs.characters[i].fightValues.max, stats.maxFight);
       stats.stepsLeft = Math.max(gs.characters[i].path.length, stats.stepsLeft);
+      stats.passOuts += gs.characters[i].passOuts;
+      stats.heals += gs.characters[i].heals;
+      stats.flux += gs.characters[i].flux;
     }
     //stats.levelUpPerCharacter = stats.allLevelUp / gs.numberOfCharacters;
     //stats.netFlux = stats.allFlux - stats.fluxLoss;
-    //stats.fluxPerCharacterDay = stats.netFlux / numberOfCharacters / stats.days;
+    stats.heals = stats.heals / numberOfCharacters;
+    stats.fluxPerCharacterDay = stats.flux / numberOfCharacters / stats.days;
     results.push(stats);
   }
 
