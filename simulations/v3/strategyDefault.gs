@@ -229,6 +229,20 @@ strategies.default = {
     // (6) just go somewhere on the light side of Altrix.
 
     /**
+     * Step 0: Check if character should copy destination from someone else in the same group.
+     */
+    // Check if anyone in the same group is on the same space, with a path set.
+    for (let i in gameState.characters) {
+      let c = gameState.characters[i];
+      if (c.name != character.name && c.group == character.group && c.space == character.space && c.path.length > 0) {
+        for (let s of c.path) {
+          if (global.locations.list.includes(s))
+            return s;
+        }
+      }
+    }
+
+    /**
      * Step 1: Check if it is time to go to the dark side.
      */
     // First check if the character already is on the dark side.
@@ -305,5 +319,38 @@ strategies.default = {
     }
     shuffle(candidates);
     return candidates[0];
+  },
+
+  /**
+   * Evaluates how important an item is for the character.
+   * Returns a value on the scale global.itemPrio.
+   */
+  evaluateItem: function(character, item) {
+    // Only cares for weapons matching the character's chosen skill, plus ranged weapons.
+    if (item.type == 'ranged' && !character.fightValues.ranged)
+      return global.itemPrio.useful;
+    let fSkill = character.fightValues.skill;
+    if (item[fSkill]) {
+      let nowBonus = character.fightValues[fSkill] - character[fSkill];
+      // If character already has at least this bonus, don't bother.
+      if (item[fSkill] <= nowBonus)
+        return global.itemPrio.dontBother;
+      // If weapon is above character's level...
+      if (item[fSkill] > character[fSkill]){
+        // ...don't bother if character already is overequipped...
+        if (character.fightValues[fSkill + 'OverEquipped'])
+          return global.itemPrio.dontBother;
+        // ...otherwise item is useful.
+        return global.itemPrio.useful;
+      }
+      // If item is at or just under character's skill level (or max 4), weapon is important.
+      if (Math.min(character[fSkill], 4) - item[fSkill] <= 1)
+        return global.itemPrio.important;
+      // Otherwise useful.
+      return global.itemPrio.useful;
+    }
+
+    // Nothing else is useful according to this strategy.
+    return global.itemPrio.dontBother;
   },
 };
