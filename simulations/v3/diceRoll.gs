@@ -68,6 +68,6 @@ class diceRoll {
       return 2;
     if (sum > value)
       return 1;
-    return value - sum;
+    return sum - value;
   }
 }
