@@ -8,18 +8,21 @@ function setUpData() {
    */
   let characterDataRange = 'J1:P21'; let charactersSheet = 'characters';
   global.mode = 'long';
+  global.groupStrategy = 'default';
   global.logSettings = {
     iteration: true,
-    days: false,
+    days: true,
     levelUp: true,
     reRollToLevelUp: false,
-    commandSpell: false,
+    commandSpell: true,
     atLocation: true,
+    quest: true,
     considerTraining: false,
     store: true,
-    cardResult: false,
+    cardResult: true,
+    CS: false,
     payForHealing: false,
-    selectDestination: true,
+    selectDestination: false,
     implementationMissing: false,
     error: true,
   };
@@ -27,7 +30,7 @@ function setUpData() {
   /**
    * Part 2: Simulation-independent data
    */
-  global.fallbackIterations = 2;
+  global.fallbackIterations = 1;
   global.dieSides = 6;
   global.safeDieCost = 6; // The number of fluxcrystals paid to select outcome of die instead of re-roll.
   global.locations = {
@@ -43,9 +46,12 @@ function setUpData() {
     Swordmaster: {healing: {HP: 1, MP: 1}, training: ['oneHanded']},
     Dwarrow: {healing: {HP: 2, MP: 1}},
     Lorien: {healing: {HP: 1, MP: 2}},
+    Tower1: {},
+    Tower2: {},
+    Tower3: {},
   }
   global.skills = ['sneak', 'oneHanded', 'twoHanded', 'ranged', 'spells'];
-  global.characterCounters = ['fluxGain', 'fluxLoss', 'CS', 'levelUps', 'HPloss', 'HPgain', 'MPloss', 'MPgain', 'MPspillover'];
+  global.characterCounters = ['fluxGain', 'fluxLoss', 'fluxGiven', 'fluxReceived', 'CS', 'levelUps', 'HPloss', 'HPgain', 'MPloss', 'MPgain', 'MPspillover', 'passOuts', 'heals'];
 
   // Places to read data from in the spreadsheet.
   let pathsDataRange = 'A1:AP20'; let pathsSheet = 'paths';
@@ -87,7 +93,7 @@ function setUpData() {
     important: 3,
     good: 2,
     useful: 1,
-    dontBother: 0
+    dontBother: 0,
   };
   global.vulnerability = {
     safe: 0,
@@ -97,6 +103,11 @@ function setUpData() {
     veryWeak: 4,
     critical: 5,
     passedOut: 6,
+  };
+  global.itemPrio = {
+    important: 2,
+    useful: 1,
+    dontBother: 0,
   };
 
 
