@@ -1,9 +1,96 @@
 cardResolvers.commandSpell = function(card, characters, gameState) {
-  return 'CommandSpell card resolver not implemented.';
+  // Take of flux crystal from each character, if possible.
+  let fluxToPay = characters.length;
+  for (let c of characters) {
+    if (c.flux > 1) {
+      c.changeFlux(-1);
+      fluxToPay--;
+    }
+  }
+  // If there are still flux crystals to pay, take from the richest.
+  sortBy(characters, 'flux', false);
+  for (let c of characters) {
+    while (fluxToPay && c.flux > 0) {
+      c.changeFlux(-1);
+      fluxToPay--;
+    }
+  }
+
+  // Apply Spell of Command to the character least affected.
+  sortBy(characters, 'CS');
+  characters[0].CS++;
+  log(characters[0].name + ' was smitten by the Spell of Command.', 'CS');
+  return characters[0].name + ' was smitten by the Spell of Command.';
 }
 
 cardResolvers.shuffle = function(card, characters, gameState) {
-  return 'Shuffle card resolver not implemented.';
+  card.deck.queueShuffling();
+  sortBy(characters, 'flux');
+  characters[0].changeFlux(1);
+  return 'Stars are right: ' + characters[0].name + 'gets 1 fluxcrystal and ' + card.deck.id + ' will be shuffled.';
+}
+
+cardResolvers.fight = function(card, characters, gameState) {
+  // Character with highest fight value will fight first.
+  // @TODO: Improve ranged weapon modelling.
+  // @TODO: Consider flight over fight sometimes.
+  // @TODO: Implement extra damage.
+  
+  // Shoot the arrows!
+  let bonus = 0;
+  let bowThresholds = [14, 17]; // Modelled on 3-cost bow.
+  for (let c of characters) {
+    if (c.fightValues.ranged) {
+      let dice = new diceRoll(c);
+      for (let i of bowThresholds) {
+        if (dice.skillcheck(i, c.ranged) > 0)
+          bonus++;
+      }
+      if (c.levelUp(dice, 'ranged'))
+        log(c.name + ' levels up in ranged weapons during fight (now ' + c.ranged + ').', 'levelUp');
+    }
+  }
+  // Close combat!
+  sortBySubProperty(characters, 'fightValues', 'max', false);
+  for (let c of characters) {
+    let dice = new diceRoll(c);
+    let result = dice.skillcheck(card.fight, c.fightValues.max + bonus);
+    if (c.levelUp(dice, c.fightValues.skill))
+      log(c.name + ' levels up in ' + c.fightValues.skill + ' during fight (now ' + c[c.fightValues.skill] + ').', 'levelUp');
+    if (result == 2) {
+      c.changeFlux(3);
+      return c.name + ' beats ' + card.title + ' with a perfect strike.';
+    }
+    else if (result > 0) {
+      return c.name + ' beats ' + card.title + '.';
+    }
+    else {
+      c.changeHP(-1);
+    }
+  }
+  return card.title + ' beat all characters.';
+}
+
+cardResolvers.ghost = function(card, characters, gameState) {
+  // Character with highest perception value will face the ghost first.
+  // @TODO: Implement extra damage.
+
+  sortBy(characters, 'PER', false);
+  for (let c of characters) {
+    let dice = new diceRoll(c);
+    let result = dice.skillcheck(card.success, c.PER);
+    if (result == 2) {
+      c.changeFlux(3);
+      return c.name + ' beats ' + card.title + ' with a perfect roll.';
+    }
+    else if (result > 0) {
+      return c.name + ' beats ' + card.title + '.';
+    }
+    else {
+      c.changeMP(-2);
+    }
+  }
+  return card.title + ' beat all characters.';
 }
 
 cardResolvers.valuableFind = function(card, characters, gameState) {
@@ -37,7 +124,13 @@ cardResolvers.valuableFind = function(card, characters, gameState) {
 }
 
 cardResolvers.training = function(card, characters, gameState) {
-  return 'Training card resolver not implemented.';
+  // The character with lowest skill value will train.
+  let skill = card.trait;
+  sortBy(characters, skill);
+  let c = characters[0];
+  let dice = new diceRoll(c, 5);
+  let message = c.levelUp(dice, skill);
+  return c.name + ' meets ' + card.title + ': ' + message;
 }
 
 cardResolvers.gain = function(card, characters, gameState) {
@@ -46,14 +139,6 @@ cardResolvers.gain = function(card, characters, gameState) {
 
 cardResolvers.penalty = function(card, characters, gameState) {
   return 'Penalty card resolver not implemented.';
-}
-
-cardResolvers.fight = function(card, characters, gameState) {
-  return 'Fight card resolver not implemented.';
-}
-
-cardResolvers.ghost = function(card, characters, gameState) {
-  return 'Ghost card resolver not implemented.';
 }
 
 cardResolvers.buy = function(card, characters, gameState) {
