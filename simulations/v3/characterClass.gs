@@ -48,6 +48,8 @@ class character {
 
   // Moves the character n spaces on its path. Always stops at special locations.
   move(n) {
+    if (this.getNextSpace() == global.locations.towers[global.mode])
+      return;
     this.space = this.path.shift();
     for (let i = 1; i < n; i++) {
       if (!global.locations.list.includes(this.space)) {
@@ -56,7 +58,19 @@ class character {
     }
   }
 
-  // Adds/removes n flux crystals from the character. Also loggs to stats.
+  // Gives flux crystals to another character. Logs transaction (but not as loss).
+  giveFluxTo(n, character) {
+    if (character.name == this.name)
+      return;
+    if (n > this.flux)
+      throw('Cannot give ' + n + ' flux crystals. Not enogh.');
+    this.flux -= n;
+    this.fluxGiven += n;
+    character.flux += n;
+    character.fluxReceived += n;
+  }
+
+  // Adds/removes n flux crystals from the character. Also logs to stats.
   changeFlux(n) {
     if (n < 0)
       this.fluxLoss -= n;
@@ -80,6 +94,8 @@ class character {
       this.HPgain += gain;
     }
     this.setVulnerableValues();
+    if (this.HP == 0)
+      this.passOuts++;
   }
 
   // Increases/decreases MP n steps, within reasonable bounds.
@@ -92,7 +108,7 @@ class character {
       this.MP -= loss;
       this.MPloss += loss;
       if (n + loss < 0) {
-        this.changeHP(n + loss, stats);
+        this.changeHP(n + loss);
         this.MPspillover += n + loss;
         return;
       }
@@ -123,7 +139,7 @@ class character {
   
   // Levels up the named skill, if dice allows it. If no skill is set,
   // the most relevant skill possible will be leveled (could be none).
-  // Returns a log message telling if level up succeeded or not.
+  // Returns a log message if level up succeeded, otherwise false.
   // Also updates the character's skill prio.
   levelUp(dice, skills = false) {
     // Randomize order to check skills to avoid bias.
@@ -143,20 +159,22 @@ class character {
         }
       }
     }
-    return 'No level up.';
+    return false;
   }
 
   // Sets a number of values useful in combat.
   setFightValues() {
     let values = {
-      'oneHandedWeapon': 0,
-      'twoHandedWeapon': 0,
+      oneHandedWeapon: 0,
+      twoHandedWeapon: 0,
+      oneHanded: this.oneHanded,
+      twoHanded: this.twoHanded,
+      ranged: 0,      
     };
     // Set max fight value for close combat skills.
     // Also note if character has weapon(s) useful for higher skill level only.
-    for (let s of ['oneHanded', 'twoHanded']) {
-      values[s] = this[s];
-      for (let i of this.items) {
+    for (let i of this.items) {
+      for (let s of ['oneHanded', 'twoHanded']) {
         values[s + 'Weapon'] = Math.max(values[s + 'Weapon'], i[s]);
         if (i[s] > this[s]) {
           values[s + 'OverEquipped'] = true;
@@ -166,6 +184,9 @@ class character {
           values[s] = Math.max(values[s], this[s] + i[s]);
         }
       }
+      if (i.type == 'ranged') {
+        values.ranged = Math.max(values.ranged, i.price);
+      }
     }
     if (values['twoHanded'] >= values['oneHanded']) {
       values.max = values['twoHanded'];
@@ -174,11 +195,6 @@ class character {
     else {
       values.max = values['oneHanded'];
       values.skill = 'oneHanded';
-    }
-    for (let i of this.items) {
-      if (i.type == 'ranged') {
-        values.ranged = i.price;
-      }
     }
     this.fightValues = values;
   }
@@ -216,6 +232,7 @@ class character {
       this.changeFlux(-1);
       this.changeHP(heal.HP);
       this.changeMP(heal.MP);
+      this.heals++;
       this.payToHeal(heal); // Call again, to see if it is worth healing again.
       return true;
     }
@@ -229,6 +246,7 @@ class character {
       return false;
     // If one is worth paying for, pay and heal most prioritized. (Slight preference for HP.)
     this.changeFlux(-1);
+    this.heals++;
     if (gainHP >= gainMP) {
       this.changeHP(1);
     }
@@ -250,6 +268,12 @@ class character {
     return then - now;
   }
 
+  // Gives an estimate of how important an item is for the character.
+  // Used when buying and maybe trading. Varies with the character's strategy.
+  evaluateItem(item) {
+    return strategies[this.strategy].evaluateItem(this, item);
+  }
+
   // Considers paying to train a skill, including paying to re-roll.
   // Varies with the character's strategy.
   payForTraining(skill) {
@@ -261,6 +285,9 @@ class character {
   // Also takes a quest, if a matching one exists.
   // Varies with the character's strategy.
   setDestination(gameState) {
+    // Check if character is at the end.
+    if (this.space == global.locations.towers[global.mode])
+      return;
     // Check if there is a special location in the path already.
     for (let i of this.path) {
       if (global.locations.list.includes(i))
@@ -275,4 +302,5 @@ class character {
     this.takeQuest(label, gameState);
     return there;
   }
+
 }
