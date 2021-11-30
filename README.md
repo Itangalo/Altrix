@@ -1,4 +1,4 @@
-# Fluxkristall
+# Altrix
 På den här sajten finns en ärendekö för Altrix (tidigare _Äventyrsspelet Φ Flux_), där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
 Nedan finns några användbara länkar.
 
@@ -12,8 +12,8 @@ Nedan finns några användbara länkar.
 * [Changelog](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
 * [Lista med spelkomponenter](https://docs.google.com/document/d/1KzuksDq1zs2QzhiZZsYU-YpTrxwXCZp7xfEvHP8KZoM/edit?usp=sharing)
 
-Senaste versionen av spelet är beta-12.
+Senaste versionen av spelet är beta-13.
 
 # English version
 
-This is the project page for the board game FluxCrystal. The game is in Swedish, but if you're interested you can read about it at [my blog](https://creatingboardgames.wordpress.com/tag/fluxcrystal/). ([This page gives some kind of overview](https://creatingboardgames.wordpress.com/2021/10/31/the-game-im-building-fluxcrystal/).)
+This is the project page for the board game Altrix. The game is in Swedish, but if you're interested you can read about it at [my blog](https://creatingboardgames.wordpress.com/tag/fluxcrystal/). ([This page gives some kind of overview](https://creatingboardgames.wordpress.com/2021/10/31/the-game-im-building-fluxcrystal/).)
