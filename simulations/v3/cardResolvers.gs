@@ -103,7 +103,6 @@ cardResolvers.valuableFind = function(card, characters, gameState) {
     log('Magic items not implemented.', 'implementationMissing'); // @TODO: Implement magic items.
   if (sum >= card.params[1]) {
     let card = gameState.decks.items.draw();
-    // @TODO: Find a smarter solution for special cards, also for finding magic items.
     while (card.type == 'special') {
       card.deck.addToDeck(card);
       card.deck.queueShuffling();
@@ -142,7 +141,12 @@ cardResolvers.penalty = function(card, characters, gameState) {
 }
 
 cardResolvers.buy = function(card, characters, gameState) {
-  return 'Buy card resolver not implemented.';
+  let items = [
+    gameState.decks.items.draw(),
+    gameState.decks.items.draw(),
+    gameState.decks.items.draw(),
+  ];
+  return considerBuy(characters, gameState, items);
 }
 
 cardResolvers.obstacle = function(card, characters, gameState) {
@@ -150,7 +154,7 @@ cardResolvers.obstacle = function(card, characters, gameState) {
 }
 
 cardResolvers.spell = function(card, characters, gameState) {
-  return 'Annatar card resolver not implemented.';
+  return 'Spell card resolver not implemented.';
 }
 
 cardResolvers.annatar = function(card, characters, gameState) {
