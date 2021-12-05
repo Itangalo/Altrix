@@ -4,7 +4,7 @@ groupStrategies.default = {
    * May give flux crystals between characters in the group. May also refresh the Store.
    * Does not carry out the actual purchase.
    */
-  preparePurchase: function(characters, gameState) {
+  preparePurchase: function(characters, gameState, availableItems = false) {
     // Pools flux crystals if necessary.
     // Lets each character individually assess available items within economic range.
     // Buyer is randomly chosen among highest assessments.
@@ -18,9 +18,15 @@ groupStrategies.default = {
     }
 
     let assessments = {};
+    let allowRefresh = true;
     assessments[global.itemPrio.useful] = [];
     assessments[global.itemPrio.important] = [];
-    let availableItems = gameState.store;
+    if (!availableItems) {
+      availableItems = gameState.store;
+    }
+    else {
+      allowRefresh = false;
+    }
     for (let i of availableItems) {
       if (i.price <= totalFlux) {
         for (let c of characters) {
@@ -41,18 +47,22 @@ groupStrategies.default = {
       purchase = assessments[global.itemPrio.useful].shift();
     }
 
-    // If nothing interesting is found, let the richest character pay for refreshing
-    // the Store, if the group has enough flux crystals.    
-    sortBy(characters, 'flux', false);
-    if (!purchase) {
-      if (totalFlux > 3 + characters.length) {
-        locationResolvers.home.refreshStore(characters[0], gameState);
-        return groupStrategies[global.groupStrategy].preparePurchase(characters, gameState);
-      }
-      else {
-        return false;
+    // If nothing interesting is found, let the richest character pay for refreshing the Store,
+    // if the group has enough flux crystals. (But only shopping is done at the store.)
+    if (allowRefresh) {
+      sortBy(characters, 'flux', false);
+      if (!purchase) {
+        if (totalFlux > 3 + characters.length) {
+          locationResolvers.home.refreshStore(characters[0], gameState);
+          return groupStrategies[global.groupStrategy].preparePurchase(characters, gameState);
+        }
+        else {
+          return false;
+        }
       }
     }
+    if (!purchase)
+      return false;
 
     // Other players draw lots for givng flux crystals to the buyer until she
     // can pay for the item. (If at all needed.)
@@ -63,6 +73,5 @@ groupStrategies.default = {
       }
     }
     return purchase;
-
   },
 };
