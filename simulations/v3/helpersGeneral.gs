@@ -1,3 +1,7 @@
+/**
+ * @file: Helper functions dealing with general JavaScript stuff.
+ */
+
 // Used for controling which log messages to display.
 function log(message, type) {
   if (global.logSettings[type]) {
