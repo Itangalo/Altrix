@@ -242,6 +242,7 @@ strategies.default = {
       }
     }
 
+
     /**
      * Step 1: Check if it is time to go to the dark side.
      */
@@ -262,6 +263,7 @@ strategies.default = {
     else if (character.fightValues.max >= 5 && character.fightValues.ranged && character['ranged'] >= 2)
       goDark = true;
     if (goDark) {
+      character.goDarkDay = gameState.days;
       if (global.mode == 'short')
         return 'Tower1';
       // Prefer going through the Mountains, unless the Deep Forest is closer.
