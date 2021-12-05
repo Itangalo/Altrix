@@ -39,7 +39,14 @@ class deck {
 
   // Draws the top card.
   draw() {
-    return this.cards.shift();
+    let card = this.cards.shift();
+    // Take care of special cases that should lead to new cards.
+    if (this.id == 'items' && card.type == 'special') {
+      this.queueShuffling();
+      this.addToDeck(card);
+      return this.draw();
+    }
+    return card;
   }
 
   // Returns the first found card with the given name, or false if none is found.
