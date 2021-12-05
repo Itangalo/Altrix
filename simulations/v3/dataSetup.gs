@@ -2,12 +2,10 @@
  * Data used before running the first game simulation.
  */
 
-function setUpData() {
+function setUpData(characterData = false) {
   /**
    * Part 1: Simulation-specific data
    */
-  let characterDataRange = 'J1:P21'; let charactersSheet = 'characters';
-  global.mode = 'long';
   global.groupStrategy = 'default';
   global.logSettings = {
     iteration: true,
@@ -16,13 +14,14 @@ function setUpData() {
     reRollToLevelUp: false,
     commandSpell: true,
     atLocation: true,
-    quest: true,
-    considerTraining: false,
-    store: true,
-    cardResult: true,
+    quest: false,
+    considerTraining: true,
+    store: false,
+    buy: true,
+    cardResult: false,
     CS: false,
     payForHealing: false,
-    selectDestination: false,
+    selectDestination: true,
     implementationMissing: false,
     error: true,
   };
@@ -34,11 +33,11 @@ function setUpData() {
   global.dieSides = 6;
   global.safeDieCost = 6; // The number of fluxcrystals paid to select outcome of die instead of re-roll.
   global.locations = {
-    list: ['Home', 'University', 'Soldier', 'Swordmaster', 'Dwarrow', 'Lorien', 'Tower1', 'Tower2', 'Tower3'],
+    list: ['Home', 'University', 'Soldier', 'Swordmaster', 'Dwarrow', 'Lorien', 'Tower1', 'Tower2', 'Tower3', 'TowerS'],
     trainingList: ['University', 'Soldier', 'Swordmaster'],
-    lightList: ['Dwarrow', 'Lorien', 'Tower1', 'Tower2', 'Tower3'],
-    darkList: ['Dwarrow', 'Lorien', 'Tower1', 'Tower2', 'Tower3'],
-    towers: {short: 'Tower1', medium: 'Tower2', long: 'Tower3'},
+    lightList: ['Home', 'University', 'Soldier', 'Swordmaster'],
+    darkList: ['Dwarrow', 'Lorien', 'Tower1', 'Tower2', 'Tower3', 'TowerS'],
+    towers: {short: 'Tower1', medium: 'Tower2', long: 'Tower3', small: 'TowerS'},
     questList: ['Home', 'University', 'Soldier', 'Swordmaster'],
     Home: {healing: {HP: 1, MP: 1}},
     University: {healing: {HP: 0, MP: 2}, training: ['spells']},
@@ -49,13 +48,24 @@ function setUpData() {
     Tower1: {},
     Tower2: {},
     Tower3: {},
-  }
+    TowerS: {},
+  };
   global.skills = ['sneak', 'oneHanded', 'twoHanded', 'ranged', 'spells'];
-  global.characterCounters = ['fluxGain', 'fluxLoss', 'fluxGiven', 'fluxReceived', 'CS', 'levelUps', 'HPloss', 'HPgain', 'MPloss', 'MPgain', 'MPspillover', 'passOuts', 'heals'];
+  global.characterCounters = ['fluxGain', 'fluxLoss', 'fluxGiven', 'fluxReceived', 'CS', 'levelUps', 'HPloss', 'HPgain', 'MPloss', 'MPgain', 'MPspillover', 'passOuts', 'heals', 'goDarkDay'];
+  global.thresholdsCS = {
+    short: [2, 4, 5, 6],
+    medium: [3, 5, 7, 8, 9],
+    long: [3, 6, 8, 10, 11, 12],
+    small: [3, 5, 6, 7, 8],
+  };
 
   // Places to read data from in the spreadsheet.
-  let pathsDataRange = 'A1:AP20'; let pathsSheet = 'paths';
-  let spacesRange = 'A2:B62'; let spacesSheet = 'spaces';
+  let pathsSheet = 'paths'; let pathsDataRange = 'A1:AP20';
+  let spacesSheet = 'spaces'; let spacesRange = 'A2:B62';
+  if (global.mode == 'small') {
+    spacesSheet = 'spaces2'; spacesRange = 'A2:B38';
+    pathsSheet = 'paths2'; pathsDataRange = 'A1:AA14';
+  }
   let cardsDataRange = 'A2:T169'; let cardsSheet = 'cards';
   let cardsColumns = {
     deck: 1,
@@ -74,7 +84,7 @@ function setUpData() {
     params: 19,
     resolver: 20,
   };
-  let itemsDataRange = 'A2:I60'; let itemsSheet = 'items';
+  let itemsDataRange = 'A2:I52'; let itemsSheet = 'items';
   let itemsColumns = {
     title: 1,
     type: 2,
@@ -137,7 +147,9 @@ function setUpData() {
   }
 
   // Get character initial data from the spreadsheet and populate the characters object.
-  let characterData = transpose(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(charactersSheet).getRange(characterDataRange).getValues());
+  if (!characterData)
+    characterData = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(global.defaultCharacterSheet).getRange(global.defaultCharacterRange).getValues();
+  characterData = transpose(characterData);
   initialGameState.characters = {};
   initialGameState.numberOfCharacters = 0;
   for (let i in characterData) {
