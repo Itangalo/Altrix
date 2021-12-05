@@ -1,15 +1,27 @@
 // Some global variables.
-var global = {};
+var global = {
+  allowedModes: ['long', 'medium', 'short', 'small'],
+  defaultCharacterSheet: 'characters',
+  defaultCharacterRange: 'J1:P21',
+};
 var initialGameState = {};
 var strategies = {};
 var groupStrategies = {};
 var cardResolvers = {};
 var locationResolvers = {};
 
-function simulate(iterations) {
+function tmp() {
+  simulate(200);
+}
+
+function simulate(iterations, mode) {
   /**
    * Part 1: Build global data and initial game state.
    */
+  if (!global.allowedModes.includes[mode]) {
+    mode = global.allowedModes[0];
+  }
+  global.mode = mode;
   setUpData();
 
   /**
@@ -41,6 +53,19 @@ function simulate(iterations) {
     for (let name in gs.characters) {
       gs.characters[name] = new character(gs.characters[name], gs);
     }
+
+    // Allow players to buy from first 8 cards in the items deck.
+    // @TODO: Mock that each players has a discount of 1 to use once.
+    let initialItems = [];
+    for (let i = 0; i < 8; i++) {
+      initialItems.push(gs.decks.items.draw());
+    }
+    let group = [];
+    for (let i in gs.characters) {
+      if (gs.characters[i].space == 'Home')
+        group.push(gs.characters[i]);
+    }
+    considerBuy(group, gs, initialItems);
     locationResolvers.home.replenish(gs);
 
     /**
@@ -49,6 +74,7 @@ function simulate(iterations) {
     while (!atTheEnd(gs)) {
       stats.days++;
       log('-- Day ' + stats.days + ' --', 'days');
+      gs.days = stats.days;
       /**
        * Part 3a: Roll and move.
        */
@@ -212,14 +238,24 @@ function simulate(iterations) {
     /**
      * Part 4: Process and store some stats for the game.
      */
+    // @TODO: Make this code much prettier and less repetitive.
+    let sums = ['passOuts'];
+    let mins = ['CS', 'fightValues.max'];
+    let maxes = ['CS', 'fightValues.max', 'path.length', 'goDarkDay'];
+    let average = ['heals', 'MPspillover', 'flux'];
+    let specials = ['honourAndGlory'];
+    stats.stepsLeft = 0;
     stats.minCS = 100;
     stats.maxCS = 0;
+    stats.hog = 0;
     stats.minFight = 100;
     stats.maxFight = 0;
-    stats.stepsLeft = 0;
     stats.passOuts = 0;
     stats.heals = 0;
+    stats.HPloss = 0;
+    stats.spilloverPerCharacter = 0;
     stats.flux = 0;
+    stats.goDarkDay = 0;
     let numberOfCharacters = 0;
     for (let i in gs.characters) {
       numberOfCharacters++;
@@ -230,11 +266,13 @@ function simulate(iterations) {
       stats.stepsLeft = Math.max(gs.characters[i].path.length, stats.stepsLeft);
       stats.passOuts += gs.characters[i].passOuts;
       stats.heals += gs.characters[i].heals;
+      stats.spilloverPerCharacter += gs.characters[i].MPspillover;
       stats.flux += gs.characters[i].flux;
+      stats.hog += honourAndGlory(gs.characters[i]);
+      stats.goDarkDay = Math.max(gs.characters[i].goDarkDay, stats.goDarkDay);
     }
-    //stats.levelUpPerCharacter = stats.allLevelUp / gs.numberOfCharacters;
-    //stats.netFlux = stats.allFlux - stats.fluxLoss;
     stats.heals = stats.heals / numberOfCharacters;
+    stats.spilloverPerCharacter = stats.spilloverPerCharacter / numberOfCharacters;
     stats.fluxPerCharacterDay = stats.flux / numberOfCharacters / stats.days;
     results.push(stats);
   }
