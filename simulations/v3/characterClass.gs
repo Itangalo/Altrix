@@ -1,11 +1,10 @@
 class character {
   // Creates a character from an object with basic character data.
-  constructor(characterData, gameState, strategy = 'default') {
+  constructor(characterData, gameState) {
     // Set basic data (from sheet)
     for (let i in characterData) {
       this[i] = characterData[i];
     }
-    this.strategy = strategy;
     // Set some properties used for keeping track of statistics.
     for (let p of global.characterCounters) {
       this[p] = 0;
@@ -109,7 +108,7 @@ class character {
       this.MPloss += loss;
       if (n + loss < 0) {
         this.changeHP(n + loss);
-        this.MPspillover += n + loss;
+        this.MPspillover -= n + loss;
         return;
       }
     }
