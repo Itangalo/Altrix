@@ -31,7 +31,7 @@ function simulate(iterations, mode) {
     iterations = global.fallbackIterations;
 
   let results = []; // Game results are stored here.
-  for (let iteration = 0; iteration < iterations; iteration++) {
+  for (let iteration = 1; iteration <= iterations; iteration++) {
     log('## Game number ' + iteration, 'iteration');
 
     /**
@@ -40,7 +40,6 @@ function simulate(iterations, mode) {
     // The stats variable are used to track things to dump in the results array.
     let stats = {
       days: 0,
-      CS: 0,
       completedQuests: 0,
     }
 
@@ -84,7 +83,7 @@ function simulate(iterations, mode) {
         let dice = new diceRoll(char);
         char.payToLevelUpMovement(dice);
         if (dice.countEquals(true) >= 3) {
-          message = char.levelUp(dice);
+          let message = char.levelUp(dice);
           log('Movement: ' + message, 'levelUp');
         }
 
@@ -137,7 +136,6 @@ function simulate(iterations, mode) {
 
         // Command spell is an extra event, not the main card resolver.
         if (card.CS) {
-          stats.CS++;
           let message = cardResolvers.commandSpell(card, groups[i], gs);
           log('Command spell: ' + message, 'commandSpell');
         }
@@ -238,43 +236,32 @@ function simulate(iterations, mode) {
     /**
      * Part 4: Process and store some stats for the game.
      */
-    // @TODO: Make this code much prettier and less repetitive.
-    let sums = ['passOuts'];
-    let mins = ['CS', 'fightValues.max'];
-    let maxes = ['CS', 'fightValues.max', 'path.length', 'goDarkDay'];
-    let average = ['heals', 'MPspillover', 'flux'];
-    let specials = ['honourAndGlory'];
-    stats.stepsLeft = 0;
-    stats.minCS = 100;
-    stats.maxCS = 0;
-    stats.hog = 0;
-    stats.minFight = 100;
-    stats.maxFight = 0;
-    stats.passOuts = 0;
-    stats.heals = 0;
-    stats.HPloss = 0;
-    stats.spilloverPerCharacter = 0;
-    stats.flux = 0;
-    stats.goDarkDay = 0;
-    let numberOfCharacters = 0;
+    // Calculate Honour and Glory.
     for (let i in gs.characters) {
-      numberOfCharacters++;
-      stats.minCS = Math.min(gs.characters[i].CS, stats.minCS);
-      stats.maxCS = Math.max(gs.characters[i].CS, stats.maxCS);
-      stats.minFight = Math.min(gs.characters[i].fightValues.max, stats.minFight);
-      stats.maxFight = Math.max(gs.characters[i].fightValues.max, stats.maxFight);
-      stats.stepsLeft = Math.max(gs.characters[i].path.length, stats.stepsLeft);
-      stats.passOuts += gs.characters[i].passOuts;
-      stats.heals += gs.characters[i].heals;
-      stats.spilloverPerCharacter += gs.characters[i].MPspillover;
-      stats.flux += gs.characters[i].flux;
-      stats.hog += honourAndGlory(gs.characters[i]);
-      stats.goDarkDay = Math.max(gs.characters[i].goDarkDay, stats.goDarkDay);
+      gs.characters[i].HoG = honourAndGlory(gs.characters[i]);
     }
-    stats.heals = stats.heals / numberOfCharacters;
-    stats.spilloverPerCharacter = stats.spilloverPerCharacter / numberOfCharacters;
-    stats.fluxPerCharacterDay = stats.flux / numberOfCharacters / stats.days;
+
+    // Populate the stats object with data.
+    stats.goDarkDay = getMax(gs.characters, 'goDarkDay');
+    stats.CSaverage = getAverage(gs.characters, 'CS');
+    stats.CSmin = getMin(gs.characters, 'CS');
+    stats.CSmax = getMax(gs.characters, 'CS');
+    stats.HoG = getSum(gs.characters, 'HoG');
+    stats.stepsLeft = getMax(gs.characters, 'path', 'length');
+    stats.minFight = getMin(gs.characters, 'fightValues', 'max');
+    stats.maxFight = getMax(gs.characters, 'fightValues', 'max');
+    stats.passOuts = getSum(gs.characters, 'passOuts');
+    stats.spillover = getAverage(gs.characters, 'MPspillover');
+    stats.heals = getAverage(gs.characters, 'heals');
+    stats.flux = getAverage(gs.characters, 'flux');
+    stats.fluxPerDay = stats.flux / stats.days;
+    // Store and log the stats.
     results.push(stats);
+    let message = 'ITERATION ' + iteration + '. ';
+    for (let i in stats) {
+      message += i + ': ' + (stats[i].toFixed(2)) + '; ';
+    }
+    log(message, 'iteration');
   }
 
   /**
@@ -282,33 +269,54 @@ function simulate(iterations, mode) {
    */
   // Sort results. (Needed for percentiles.)
   var sortedResults = {};
-  for (var i in results[0]) {
+  for (let i in results[0]) {
     sortedResults[i] = [];
   }
-  for (var i in results) {
-    for (var j in results[i]) {
+  for (let i in results) {
+    for (let j in results[i]) {
       sortedResults[j].push(results[i][j]);
     }
   }
-  for (var i in sortedResults) {
+  for (let i in sortedResults) {
     sortedResults[i].sort(function(a, b) {
       return a - b;
     });
   }
 
+  // Build log
+  if (global.logSettings.statistics) {
+    let message = 'DISTRIBUTION: average (percentile ';
+    let values = [];
+    for (let p of global.percentiles) {
+      values.push(p);
+    }
+    message += values.join(' | ') + ')\r\n---\r\n';
+    for (let i in sortedResults) {
+      message += i + ': ';
+      message += average(sortedResults[i]).toFixed(2) + ' (';
+      values = [];
+      for (let p of global.percentiles) {
+        values.push(percentile(sortedResults[i], p).toFixed(2));
+      }
+      message += values.join(' | ');
+      message += ")\r\n";
+    }
+    log(message, 'statistics');
+  }
+
   // Build output array.
-  var output = [['']];
-  for (var i in sortedResults) {
+  let output = [['']];
+  for (let i in sortedResults) {
     output[0].push(i);
   }
   output.push(['Average']);
-  for (var i in sortedResults) {
+  for (let i in sortedResults) {
     output[1].push(average(sortedResults[i]));
   }
-  for (p = 0; p <= 100; p = p + 5) {
-    var line = ['percentile ' + p];
-    for (var i in sortedResults) {
-      line.push(percentile(sortedResults[i], p/100));
+  for (let p of global.percentiles) {
+    let line = ['percentile ' + p];
+    for (let i in sortedResults) {
+      line.push(percentile(sortedResults[i], p));
     }
     output.push(line);
   }
