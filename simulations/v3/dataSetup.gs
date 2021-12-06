@@ -9,22 +9,24 @@ function setUpData(characterData = false) {
   global.groupStrategy = 'default';
   global.logSettings = {
     iteration: true,
-    days: true,
-    levelUp: true,
+    days: false,
+    levelUp: false,
     reRollToLevelUp: false,
-    commandSpell: true,
-    atLocation: true,
+    commandSpell: false,
+    atLocation: false,
     quest: false,
-    considerTraining: true,
+    considerTraining: false,
     store: false,
-    buy: true,
+    buy: false,
     cardResult: false,
     CS: false,
     payForHealing: false,
     selectDestination: true,
     implementationMissing: false,
     error: true,
+    statistics: true,
   };
+  global.percentiles = [.05, .15, .50, .85, .95];
 
   /**
    * Part 2: Simulation-independent data
