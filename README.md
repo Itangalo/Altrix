@@ -2,7 +2,7 @@
 På den här sajten finns en ärendekö för Altrix (tidigare _Äventyrsspelet Φ Flux_), där man kan rapportera saker som bör rättas till eller komma med förslag på nya saker.
 Nedan finns några användbara länkar.
 
-* [10 quick videos presenting the game, version beta-13](https://www.youtube.com/watch?v=Gy4PvIUmwhA&list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks)
+* [Quick videos presenting the game in under 10 minutes](https://www.youtube.com/playlist?list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks) Plus a video showing some computer simulated stuff used while refining the game. Version 13. (engelska)
 * [Kort beskrivning av spelet, version beta-12](https://drive.google.com/file/d/1f46n9KTv1WTJ51RKwYYj5bJuSaP7Jyvn/view?usp=sharing) (engelska)
 * [Ärenden där åsikter från speltestare är särskilt välkomna](https://github.com/Itangalo/flux/issues?q=is%3Aissue+is%3Aopen+label%3A%22%C3%85sikter+%C3%B6nskas%22)
 * [Alla öppna ärenden](https://github.com/Itangalo/flux/issues)
@@ -13,14 +13,15 @@ Nedan finns några användbara länkar.
 * [Changelog](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
 * [Lista med spelkomponenter](https://docs.google.com/document/d/1KzuksDq1zs2QzhiZZsYU-YpTrxwXCZp7xfEvHP8KZoM/edit?usp=sharing)
 
-Senaste versionen av spelet är beta-13.
+Senaste versionen av spelet är beta-14.
 
 # English version
 
 This is the project page for the board game Altrix. Most game material is in Swedish, but there are some English translations as well.
 
-* [10 quick videos presenting the game, version beta-13](https://www.youtube.com/watch?v=Gy4PvIUmwhA&list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks)
+* [Quick videos presenting the game in under 10 minutes](https://www.youtube.com/playlist?list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks) Plus a video showing some computer simulated stuff used while refining the game. Version 13. (engelska)
 * [Introduction campaign booklet](https://docs.google.com/document/d/182bq7kuiIOWs9BpOk0_RzuMBsPA0q2j3HGGl8NtPmf8/edit?usp=sharing) (contains story, rules and instructions; version beta-13)
 * [Reference booklet](https://docs.google.com/document/d/1gfuM18Oxsqs3ndOdw5yE6uSkkX51HnMULLOjCcQLxHo/edit?usp=sharing) (a more standard rules book; version beta-13)
+* [10 quick videos with a closer look at the game, version beta-13](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFfydf67ua_qVtlNTYiGJbg)
 
 Some more thoughts can be found on [my blog](https://creatingboardgames.wordpress.com/tag/fluxcrystal/). ([This page gives some kind of overview of the game](https://creatingboardgames.wordpress.com/2021/10/31/the-game-im-building-fluxcrystal/).)
