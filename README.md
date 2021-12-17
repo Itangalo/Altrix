@@ -17,7 +17,7 @@ Senaste versionen av spelet är beta-14.
 
 # English version
 
-This is the project page for the board game Altrix. Most game material is in Swedish, but there are some English translations as well.
+This is the project page for the board game Altrix. Being a game played with kids, it is being playtested in Swedish. Rules are translated to English. Cards and character sheets will be translated to English when requested.
 
 * [Quick videos presenting the game in under 10 minutes](https://www.youtube.com/playlist?list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks) Plus a video showing some computer simulated stuff used while refining the game. Version 13. (engelska)
 * [Introduction campaign booklet](https://docs.google.com/document/d/182bq7kuiIOWs9BpOk0_RzuMBsPA0q2j3HGGl8NtPmf8/edit?usp=sharing) (contains story, rules and instructions; version beta-13)
