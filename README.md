@@ -24,9 +24,7 @@ This is the project page for the board game Altrix. Being a game played with kid
 * [Video presenting the game in under 10 minutes](https://youtu.be/jORuoWoDn9g) Between version 16 and 17.
 * [Video introducing the game idea in under five minutes](https://youtu.be/xMgdxq7tCwI) Version 15 (almost).
 * [Quick videos presenting the game in under 10 minutes](https://www.youtube.com/playlist?list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks) Plus a video showing some computer simulated stuff used while refining the game. Version 13.
-* [Introduction campaign](https://docs.google.com/document/d/1ULSi_0zMX9gZrjE1Y0kjMt9v3zAZgnTHrtApMgC7GKU/edit?usp=sharing) (contains story, rules and instructions; version beta-17; **updating is work in progress**)
-* [Reference booklet](https://docs.google.com/document/d/1DFZGKIbjI6j00nn5_4C00xviVZxfxiP8BYB2VGX_uGQ/edit?usp=sharing) (a more standard rules book; version beta-17; **updating is work in progress**)
-* [Introduction campaign booklet](https://docs.google.com/document/d/182bq7kuiIOWs9BpOk0_RzuMBsPA0q2j3HGGl8NtPmf8/edit?usp=sharing) (contains story, rules and instructions; version beta-13)
-* [Reference booklet](https://docs.google.com/document/d/1gfuM18Oxsqs3ndOdw5yE6uSkkX51HnMULLOjCcQLxHo/edit?usp=sharing) (a more standard rules book; version beta-13)
+* [Introduction campaign](https://docs.google.com/document/d/1ULSi_0zMX9gZrjE1Y0kjMt9v3zAZgnTHrtApMgC7GKU/edit?usp=sharing) (contains story, rules and instructions; version beta-17)
+* [Reference booklet](https://docs.google.com/document/d/1DFZGKIbjI6j00nn5_4C00xviVZxfxiP8BYB2VGX_uGQ/edit?usp=sharing) (a more standard rules book; version beta-17)
 
 Some more thoughts can be found on [my blog](https://creatingboardgames.wordpress.com/tag/fluxcrystal/). ([This page gives some kind of overview of the game](https://creatingboardgames.wordpress.com/2021/10/31/the-game-im-building-fluxcrystal/).)
