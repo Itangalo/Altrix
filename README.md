@@ -15,11 +15,11 @@ Nedan finns några användbara länkar.
 * [Changelog](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
 * [Lista med spelkomponenter](https://docs.google.com/document/d/1KzuksDq1zs2QzhiZZsYU-YpTrxwXCZp7xfEvHP8KZoM/edit?usp=sharing)
 
-Senaste versionen av spelet är beta-16.
+Senaste versionen av spelet är beta-19.
 
 # English version
 
-This is the project page for the board game Altrix. Being a game played with kids, it is being playtested in Swedish. Rules are translated to English. Cards and character sheets will be translated to English when requested.
+This is the project page for the board game Altrix. Being a game played with kids it is being developed in Swedish, but there are English translations available.
 
 * [Video presenting the game in under 10 minutes](https://youtu.be/jORuoWoDn9g) Between version 16 and 17.
 * [Video introducing the game idea in under five minutes](https://youtu.be/xMgdxq7tCwI) Version 15 (almost).
@@ -28,6 +28,5 @@ This is the project page for the board game Altrix. Being a game played with kid
 * [Reference booklet](https://docs.google.com/document/d/1DFZGKIbjI6j00nn5_4C00xviVZxfxiP8BYB2VGX_uGQ/edit?usp=sharing) (a more standard rules book; version beta-17; **updating is work in progress**)
 * [Introduction campaign booklet](https://docs.google.com/document/d/182bq7kuiIOWs9BpOk0_RzuMBsPA0q2j3HGGl8NtPmf8/edit?usp=sharing) (contains story, rules and instructions; version beta-13)
 * [Reference booklet](https://docs.google.com/document/d/1gfuM18Oxsqs3ndOdw5yE6uSkkX51HnMULLOjCcQLxHo/edit?usp=sharing) (a more standard rules book; version beta-13)
-* [10 quick videos with a closer look at the game, version beta-13](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFfydf67ua_qVtlNTYiGJbg)
 
 Some more thoughts can be found on [my blog](https://creatingboardgames.wordpress.com/tag/fluxcrystal/). ([This page gives some kind of overview of the game](https://creatingboardgames.wordpress.com/2021/10/31/the-game-im-building-fluxcrystal/).)
