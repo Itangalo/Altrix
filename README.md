@@ -10,12 +10,11 @@ Nedan finns några användbara länkar.
 * [Alla öppna ärenden](https://github.com/Itangalo/flux/issues)
 * [Videor som presenterar spelet, version beta-10](https://www.youtube.com/playlist?list=PL5sq4vtv3sTFHI3y2Dx87BbZ0Ub68bdOQ) (Detta är _inte_ säljvideor, utan mer en demonstration av spelet.)
 * [Senaste versionen av häfte för introduktionspartiet](https://docs.google.com/document/d/1LF397QvcxtbiinCA1kzV64gKxu1OLq3qFQxsI5-Y_X4/edit?usp=sharing)
-* [Senaste versionen av reglerna](https://docs.google.com/document/d/1Q_pZ0WX0aOq26T58mUwapzdq7fgq_ViS6TdR_Ql4Z_c/edit?usp=sharing)
-* [Senaste versionen av referensbladet](https://docs.google.com/document/d/16TkV_Xmfj7y2afkjahS3ihqRBaoMIRfc6H3l9Pvabm8/edit?usp=sharing)
+* [Senaste versionen av reglerna](https://docs.google.com/document/d/1PF7Y-vahTVpxu8NbFFkIn6MyIyGZ2ChGLJNUyIIgfLs/edit?usp=sharing)
 * [Changelog](https://docs.google.com/document/d/1pU1vAltDPPNMlA5_gABpuSiABeB4uDerjmWZKNIaVII/edit?usp=sharing)
 * [Lista med spelkomponenter](https://docs.google.com/document/d/1KzuksDq1zs2QzhiZZsYU-YpTrxwXCZp7xfEvHP8KZoM/edit?usp=sharing)
 
-Senaste versionen av spelet är beta-19.
+Senaste versionen av spelet är beta-20.
 
 # English version
 
