@@ -20,7 +20,9 @@ Senaste versionen av spelet är beta-20.
 
 This is the project page for the board game Altrix. Being a game played with kids it is being developed in Swedish, but there are English translations available.
 
-* [Video presenting the game in under 10 minutes](https://youtu.be/jORuoWoDn9g) Between version 16 and 17.
+There is now a solo version of this game available at [Game Crafter](https://www.thegamecrafter.com/games/the-adventures-of-altrix-solo-version)! It is a choose-your-own-path style game, submitted to a contest at Game Crafter.
+
+* [Video presenting the (non-solo) game in under 10 minutes](https://youtu.be/jORuoWoDn9g) Between version 16 and 17.
 * [Video introducing the game idea in under five minutes](https://youtu.be/xMgdxq7tCwI) Version 15 (almost).
 * [Quick videos presenting the game in under 10 minutes](https://www.youtube.com/playlist?list=PL5sq4vtv3sTECBhwLJ4CakVDLWjJpW_ks) Plus a video showing some computer simulated stuff used while refining the game. Version 13.
 * [Introduction campaign](https://docs.google.com/document/d/1ULSi_0zMX9gZrjE1Y0kjMt9v3zAZgnTHrtApMgC7GKU/edit?usp=sharing) (contains story, rules and instructions; version beta-17)
